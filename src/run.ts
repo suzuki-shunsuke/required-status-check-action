@@ -70,13 +70,13 @@ const Workflow = z.object({
 type Workflow = z.infer<typeof Workflow>;
 
 const validateInput = (input: Input) => {
-  if (input.job === '') {
+  if (input.job === "") {
     throw new Error("GITHUB_JOB is required");
   }
-  if (input.workflowRef === '') {
+  if (input.workflowRef === "") {
     throw new Error("GITHUB_WORKFLOW_REF is required");
   }
-  if (input.workflowSHA === '') {
+  if (input.workflowSHA === "") {
     throw new Error("GITHUB_WORKFLOW_SHA is required");
   }
 };
@@ -92,7 +92,7 @@ const validateNeeds = (input: Input) => {
 const getWorkflow = async (input: Input): Promise<Workflow> => {
   // parse workflow ref
   // <owner>/<repo>/<path>@<ref>
-  const workflowParts = input.workflowRef.split('@')[0].split('/');
+  const workflowParts = input.workflowRef.split("@")[0].split("/");
   const workflowOwner = workflowParts[0];
   const workflowRepo = workflowParts[1];
   const workflowPath = workflowParts[2];
@@ -109,7 +109,7 @@ const getWorkflow = async (input: Input): Promise<Workflow> => {
   if (data.content === undefined) {
     throw new Error("workflow file is not a file");
   }
-  if (data.content === '') {
+  if (data.content === "") {
     throw new Error("workflow file is empty");
   }
   return Workflow.parse(load(data.content));
@@ -120,7 +120,7 @@ const validateWorkflow = (input: Input, workflow: Workflow) => {
   const jobKeys = new Set([input.job]);
   if (!workflow.jobs.has(input.job)) {
     throw new Error(`job ${input.job} not found in workflow`);
-  };
+  }
   let count = 1;
   while (true) {
     for (const [jobKey, job] of workflow.jobs.entries()) {
@@ -141,7 +141,9 @@ const validateWorkflow = (input: Input, workflow: Workflow) => {
     }
   }
   if (invalidJobs.size > 0) {
-    throw new Error(`jobs ${Array.from(invalidJobs).join(', ')} should be added to the needs of ${input.job}`);
+    throw new Error(
+      `jobs ${Array.from(invalidJobs).join(", ")} should be added to the needs of ${input.job}`,
+    );
   }
 };
 
@@ -152,7 +154,7 @@ const shouldAdd = (jobKeys: Set<string>, jobKey: string, job: Job): boolean => {
   if (jobKeys.has(jobKey)) {
     return true;
   }
-  if (typeof job.needs === 'string') {
+  if (typeof job.needs === "string") {
     return jobKeys.has(job.needs);
   }
   for (const need of job.needs) {
@@ -168,7 +170,7 @@ const addJob = (jobKeys: Set<string>, jobKey: string, job: Job) => {
     return;
   }
   jobKeys.add(jobKey);
-  if (typeof job.needs === 'string') {
+  if (typeof job.needs === "string") {
     jobKeys.add(job.needs);
     return;
   }
