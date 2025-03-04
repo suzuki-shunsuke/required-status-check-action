@@ -1,0 +1,27 @@
+name: Required Status Check
+description: Required Status Check
+author: Shunsuke Suzuki
+branding:
+  icon: lock
+  color: green
+inputs:
+  needs:
+    description: |
+      Job's needs
+      ${{ toJson(needs) }}
+    required: true
+  github_token:
+    description: |
+      GitHub Access Token.
+      The permission `contents:read` is required.
+    required: false
+    default: ${{ github.token }}
+  check_workflow:
+    description: |
+      Whether to check the workflow jobs' needs.
+    required: false
+    default: "true"
+runs:
+  using: "node20"
+  main: "dist/index.js"
+  post: "dist/index.js"
