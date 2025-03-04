@@ -25,19 +25,16 @@ jobs:
               - aqua/ghalint.yaml
 
   status-check:
-    # This job is used for main branch's branch protection rule's status check.
-    # If all dependent jobs succeed or are skipped this job succeeds.
-    timeout-minutes: 10
-    runs-on: ubuntu-latest
     needs:
       - renovate-config-validator
       - ghalint
       - create-pr-branch
-      - test
-    permissions: {}
-    if: failure()
-    steps:
-      - run: exit 1
+    if: always()
+    uses: ./.github/workflows/wc-test.yaml
+    with:
+      needs: ${{ toJson(needs) }}
+    permissions:
+      contents: read
 
   renovate-config-validator:
     uses: ./.github/workflows/wc-renovate-config-validator.yaml
@@ -60,8 +57,3 @@ jobs:
       pull-requests: write
     with:
       pr: ${{github.event.pull_request.number}}
-
-  test:
-    uses: ./.github/workflows/wc-test.yaml
-    permissions:
-      contents: write

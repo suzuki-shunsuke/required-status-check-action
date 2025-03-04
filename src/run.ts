@@ -15,6 +15,13 @@ export const main = async () => {
 };
 
 const run = async (input: Input) => {
+  // debug
+  core.info(`needs: ${input.needs}`);
+  core.info(`checkWorkflow: ${input.checkWorkflow}`);
+  core.info(`job: ${input.job}`);
+  core.info(`workflowRef: ${input.workflowRef}`);
+  core.info(`workflowSHA: ${input.workflowSHA}`);
+
   validateNeeds(input);
   if (!input.checkWorkflow) {
     return;

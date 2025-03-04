@@ -8,7 +8,7 @@ inputs:
   needs:
     description: |
       Job's needs
-      ${{ toJson(needs) }}
+      toJson(needs)
     required: true
   github_token:
     description: |

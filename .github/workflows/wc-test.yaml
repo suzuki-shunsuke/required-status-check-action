@@ -1,6 +1,12 @@
 ---
 name: Test (workflow_call)
-on: workflow_call
+on:
+  workflow_call:
+    inputs:
+      needs:
+        type: string
+        description: Job's needs
+        required: true
 
 jobs:
   test:
@@ -19,3 +25,5 @@ jobs:
       - run: npm ci
       - run: npm run build
       - uses: ./
+        with:
+          needs: ${{ toJson(needs) }}
