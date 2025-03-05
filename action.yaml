@@ -27,6 +27,12 @@ inputs:
       Whether to check the workflow jobs' needs.
     required: false
     default: "true"
+  ignored_jobs:
+    description: |
+      The list of ignored job keys.
+      Each job key is separated by newline.
+    required: false
+    default: "true"
 runs:
   using: "node20"
   main: "dist/index.js"

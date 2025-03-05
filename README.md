@@ -51,20 +51,19 @@ And if you add a job `zoo`, you also need to add the job to status-check's `need
 needs: [foo, bar]
 ```
 
-This action fails if `status-check` doesn't depend on `zoo` directly or indirectly.
+This action fails if `status-check` doesn't depend on `zoo` directly.
 
 In some cases, you may want to run some jobs after `status-check`.
-For instance, you may want to merge the pull request after `status-check`:
+Or you may want to accept the failure of some jobs.
+In that case, please add those jobs to this action's input `ignored_jobs`.
 
 ```yaml
-merge:
-  needs: [status-check]
-  runs-on: ubuntu-24.04
-  steps:
-    # ...
+- uses: suzuki-shunsuke/required-status-check-action@latest
+  with:
+    needs: ${{ toJson(needs) }}
+    ignored_jobs: |
+      merge
 ```
-
-This action allows this kind of jobs.
 
 ## Available versions
 
@@ -147,6 +146,7 @@ jobs:
     needs:
       - test
       - build
+    runs-on: ubuntu-24.04
     if: always()
     permissions:
       contents: read # To get the workflow content by GitHub API
