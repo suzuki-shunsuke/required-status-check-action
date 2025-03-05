@@ -1,71 +1,100 @@
-import { expect, test } from 'vitest';
-import { validateInput, validateNeeds, validateWorkflow, parseWorkflowRef, parseWorkflowData } from './run';
-import { parse } from 'path';
+import { expect, test } from "vitest";
+import {
+  validateInput,
+  validateNeeds,
+  validateWorkflow,
+  parseWorkflowRef,
+  parseWorkflowData,
+} from "./run";
+import { parse } from "path";
 
-test('validateInput', () => {
-  expect(() => validateInput({
-    githubToken: "xxx",
-    needs: {},
-    checkWorkflow: false,
-    job: "",
-    workflowRef: "suzuki-shunsuke/required-status-check-action/.github/workflows/pull_request.yaml@refs/pull/1/merge",
-    workflowSHA: "xxx",
-    ignoredJobKeys: [],
-  })).toThrowError("GITHUB_JOB is required");
-  expect(() => validateInput({
-    githubToken: "xxx",
-    needs: {},
-    checkWorkflow: false,
-    job: "status-check",
-    workflowRef: "",
-    workflowSHA: "xxx",
-    ignoredJobKeys: [],
-  })).toThrowError("GITHUB_WORKFLOW_REF is required");
-  expect(() => validateInput({
-    githubToken: "xxx",
-    needs: {},
-    checkWorkflow: false,
-    job: "status-check",
-    workflowRef: "suzuki-shunsuke/required-status-check-action/.github/workflows/pull_request.yaml@refs/pull/1/merge",
-    workflowSHA: "",
-    ignoredJobKeys: [],
-  })).toThrowError("GITHUB_WORKFLOW_SHA is required");
+test("validateInput", () => {
+  expect(() =>
+    validateInput({
+      githubToken: "xxx",
+      needs: {},
+      checkWorkflow: false,
+      job: "",
+      workflowRef:
+        "suzuki-shunsuke/required-status-check-action/.github/workflows/pull_request.yaml@refs/pull/1/merge",
+      workflowSHA: "xxx",
+      ignoredJobKeys: [],
+    }),
+  ).toThrowError("GITHUB_JOB is required");
+  expect(() =>
+    validateInput({
+      githubToken: "xxx",
+      needs: {},
+      checkWorkflow: false,
+      job: "status-check",
+      workflowRef: "",
+      workflowSHA: "xxx",
+      ignoredJobKeys: [],
+    }),
+  ).toThrowError("GITHUB_WORKFLOW_REF is required");
+  expect(() =>
+    validateInput({
+      githubToken: "xxx",
+      needs: {},
+      checkWorkflow: false,
+      job: "status-check",
+      workflowRef:
+        "suzuki-shunsuke/required-status-check-action/.github/workflows/pull_request.yaml@refs/pull/1/merge",
+      workflowSHA: "",
+      ignoredJobKeys: [],
+    }),
+  ).toThrowError("GITHUB_WORKFLOW_SHA is required");
 });
 
-test('validateNeeds', () => {
-  expect(() => validateNeeds({
-    foo: {
-      result: "failure",
-    },
-  })).toThrowError("the job foo failed");
-});
-
-test('validateWorkflow', () => {
-  expect(() => validateWorkflow({
-    githubToken: "xxx",
-    needs: {
-      test: {
-        result: "success",
+test("validateNeeds", () => {
+  expect(() =>
+    validateNeeds({
+      foo: {
+        result: "failure",
       },
-    },
-    checkWorkflow: false,
-    job: "status-check",
-    workflowRef: "suzuki-shunsuke/required-status-check-action/.github/workflows/pull_request.yaml@refs/pull/1/merge",
-    workflowSHA: "xxx",
-    ignoredJobKeys: [],
-  }, {
-    jobs: {
-      test: {},
-      build: {},
-      "status-check": {
-        needs: ["test"],
-      },
-    },
-  })).toThrowError("The job build must be added to status-check's needs or ignored_jobs");
+    }),
+  ).toThrowError("the job foo failed");
 });
 
-test('parseWorkflowRef', () => {
-  expect(parseWorkflowRef("suzuki-shunsuke/required-status-check-action/.github/workflows/pull_request.yaml@refs/pull/1/merge", "xxx")).toEqual({
+test("validateWorkflow", () => {
+  expect(() =>
+    validateWorkflow(
+      {
+        githubToken: "xxx",
+        needs: {
+          test: {
+            result: "success",
+          },
+        },
+        checkWorkflow: false,
+        job: "status-check",
+        workflowRef:
+          "suzuki-shunsuke/required-status-check-action/.github/workflows/pull_request.yaml@refs/pull/1/merge",
+        workflowSHA: "xxx",
+        ignoredJobKeys: [],
+      },
+      {
+        jobs: {
+          test: {},
+          build: {},
+          "status-check": {
+            needs: ["test"],
+          },
+        },
+      },
+    ),
+  ).toThrowError(
+    "The job build must be added to status-check's needs or ignored_jobs",
+  );
+});
+
+test("parseWorkflowRef", () => {
+  expect(
+    parseWorkflowRef(
+      "suzuki-shunsuke/required-status-check-action/.github/workflows/pull_request.yaml@refs/pull/1/merge",
+      "xxx",
+    ),
+  ).toEqual({
     owner: "suzuki-shunsuke",
     repo: "required-status-check-action",
     path: ".github/workflows/pull_request.yaml",
@@ -73,8 +102,9 @@ test('parseWorkflowRef', () => {
   });
 });
 
-test('parseWorkflowData', () => {
-  expect(parseWorkflowData(`bmFtZTogcHVsbCByZXF1ZXN0Cm9uOiBwdWxsX3JlcXVlc3QKam9iczoKICB0ZXN0OgogICAgcnVu
+test("parseWorkflowData", () => {
+  expect(
+    parseWorkflowData(`bmFtZTogcHVsbCByZXF1ZXN0Cm9uOiBwdWxsX3JlcXVlc3QKam9iczoKICB0ZXN0OgogICAgcnVu
 cy1vbjogdWJ1bnR1LTI0LjA0CiAgICBwZXJtaXNzaW9uczoge30KICAgIHRpbWVvdXQtbWludXRl
 czogMTAKICAgIHN0ZXBzOgogICAgICAtIHJ1bjogdGVzdCAtbiAiJEZPTyIKICAgICAgICBlbnY6
 CiAgICAgICAgICBGT086ICR7e3ZhcnMuRk9PfX0KICBidWlsZDoKICAgIHJ1bnMtb246IHVidW50
@@ -94,7 +124,8 @@ IG1lcmdlOgogICAgcnVucy1vbjogdWJ1bnR1LTI0LjA0CiAgICBwZXJtaXNzaW9uczoge30KICAg
 IHRpbWVvdXQtbWludXRlczogMTAKICAgIG5lZWRzOgogICAgICAtIHN0YXR1cy1jaGVjawogICAg
 c3RlcHM6CiAgICAgIC0gcnVuOiB0ZXN0IC1uICIkRk9PIgogICAgICAgIGVudjoKICAgICAgICAg
 IEZPTzogJHt7dmFycy5GT099fQo=
-`)).toEqual({
+`),
+  ).toEqual({
     jobs: {
       test: {},
       build: {},

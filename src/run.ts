@@ -124,7 +124,10 @@ export type WorkflowRef = {
   ref: string;
 };
 
-export const parseWorkflowRef = (workflowRef: string, workflowSHA: string): WorkflowRef => {
+export const parseWorkflowRef = (
+  workflowRef: string,
+  workflowSHA: string,
+): WorkflowRef => {
   // parse workflow ref
   // <owner>/<repo>/<path>@<ref>
   const workflowParts = workflowRef.split("@")[0].split("/");
@@ -176,7 +179,6 @@ export const parseWorkflowData = (content: string): Workflow => {
   }
   return w.data;
 };
-
 
 export const validateWorkflow = (input: Input, workflow: Workflow) => {
   const jobKeys = new Set(
