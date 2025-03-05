@@ -57,7 +57,7 @@ const Need = z.object({
 });
 export type Need = z.infer<typeof Need>;
 
-const Needs = z.map(z.string(), Need);
+const Needs = z.record(z.string(), Need);
 type Needs = z.infer<typeof Needs>;
 
 /* workflow
@@ -89,7 +89,7 @@ const validateInput = (input: Input) => {
 };
 
 const validateNeeds = (input: Input) => {
-  for (const need of input.needs.values()) {
+  for (const need of Object.values(input.needs)) {
     if (need.result === "failure") {
       throw new Error("a need failed");
     }
