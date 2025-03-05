@@ -24,7 +24,7 @@ status-check:
 
 Furthermore, `required-status-check-action` validates if all jobs are added to `needs` of `required-status-check-action`.
 
-## Get Started
+## Getting Started
 
 First, please create a GitHub Repository and add a GitHub Actions Workflow:
 
