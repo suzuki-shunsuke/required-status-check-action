@@ -102,7 +102,7 @@ const getWorkflow = async (input: Input): Promise<Workflow> => {
   const workflowParts = input.workflowRef.split("@")[0].split("/");
   const workflowOwner = workflowParts[0];
   const workflowRepo = workflowParts[1];
-  const workflowPath = workflowParts[2];
+  const workflowPath = workflowParts.slice(2).join("/");
 
   // reads or downloads the workflow file
   const octokit = github.getOctokit(input.githubToken);
