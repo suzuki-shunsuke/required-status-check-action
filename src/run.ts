@@ -4,9 +4,20 @@ import { z } from "zod";
 import { load } from "js-yaml";
 
 export const main = async () => {
+  const inputNeeds = core.getInput("needs", { required: true });
+  let needsJSON: any;
+  try {
+    needsJSON = JSON.parse(inputNeeds);
+  } catch (error) {
+    throw new Error(`needs is not a valid JSON: ${error}`);
+  }
+  const needs = Needs.safeParse(needsJSON);
+  if (!needs.success) {
+    throw new Error(`needs must be either a string or an array of strings: ${needs.error}`);
+  }
   run({
     githubToken: core.getInput("github_token"),
-    needs: Needs.parse(JSON.parse(core.getInput("needs", { required: true }))),
+    needs: needs.data,
     checkWorkflow: core.getBooleanInput("check_workflow"),
     job: process.env.GITHUB_JOB || "",
     workflowRef: process.env.GITHUB_WORKFLOW_REF || "",
@@ -16,11 +27,12 @@ export const main = async () => {
 
 const run = async (input: Input) => {
   // debug
-  core.info(`needs: ${input.needs}`);
-  core.info(`checkWorkflow: ${input.checkWorkflow}`);
-  core.info(`job: ${input.job}`);
-  core.info(`workflowRef: ${input.workflowRef}`);
-  core.info(`workflowSHA: ${input.workflowSHA}`);
+  core.info(`parameters:
+  needs: ${input.needs}
+  checkWorkflow: ${input.checkWorkflow}
+  job: ${input.job}
+  workflowRef: ${input.workflowRef}
+  workflowSHA: ${input.workflowSHA}`);
 
   validateNeeds(input);
   if (!input.checkWorkflow) {
@@ -125,7 +137,11 @@ const getWorkflow = async (input: Input): Promise<Workflow> => {
   if (data.content === "") {
     throw new Error("workflow file is empty");
   }
-  return Workflow.parse(load(data.content));
+  const w = Workflow.safeParse(load(data.content));
+  if (!w.success) {
+    throw new Error(`the workflow file is not a valid workflow: ${w.error}`);
+  }
+  return w.data;
 };
 
 const validateWorkflow = (input: Input, workflow: Workflow) => {
