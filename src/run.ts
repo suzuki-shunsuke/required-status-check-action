@@ -21,7 +21,7 @@ export const main = async () => {
     githubToken: core.getInput("github_token"),
     needs: needs.data,
     checkWorkflow: core.getBooleanInput("check_workflow"),
-    job: process.env.GITHUB_JOB || "",
+    job: core.getInput("job"),
     workflowRef: process.env.GITHUB_WORKFLOW_REF || "",
     workflowSHA: process.env.GITHUB_WORKFLOW_SHA || "",
   });

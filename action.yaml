@@ -5,6 +5,12 @@ branding:
   icon: lock
   color: green
 inputs:
+  job:
+    description: |
+      Job key.
+      By default, GITHUB_JOB is used.
+    required: false
+    default: ${{ github.job }}
   needs:
     description: |
       Job's needs
