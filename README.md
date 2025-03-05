@@ -72,10 +72,10 @@ This action allows this kind of jobs.
 2. Add a job `status-check` and adds all jobs that must pass to `status-check`'s needs
 
 ```yaml
-  status-check:
-    needs:
-      - test
-      - build
+status-check:
+  needs:
+    - test
+    - build
 ```
 
 3. Set `if: always()` to `status-check`:
