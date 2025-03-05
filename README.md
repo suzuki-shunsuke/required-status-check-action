@@ -130,7 +130,7 @@ Note that there are bugs about the evaluation of GitHub Actions' job's if statem
 
 ### Bad setting 1. `failure()`
 
-:x: So the following settings don't work as expected:
+The following settings don't work as expected:
 
 ```yaml
 status-check:
