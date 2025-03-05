@@ -42,7 +42,7 @@ const run = async (input: Input) => {
   workflowRef: ${input.workflowRef}
   workflowSHA: ${input.workflowSHA}`);
 
-  validateNeeds(input);
+  validateNeeds(input.needs);
   if (!input.checkWorkflow) {
     return;
   }
@@ -97,7 +97,7 @@ const Workflow = z.object({
 });
 type Workflow = z.infer<typeof Workflow>;
 
-const validateInput = (input: Input) => {
+export const validateInput = (input: Input) => {
   if (input.job === "") {
     throw new Error("GITHUB_JOB is required");
   }
@@ -109,47 +109,66 @@ const validateInput = (input: Input) => {
   }
 };
 
-const validateNeeds = (input: Input) => {
-  for (const [jobKey, need] of Object.entries(input.needs)) {
+export const validateNeeds = (needs: Needs) => {
+  for (const [jobKey, need] of Object.entries(needs)) {
     if (need.result === "failure") {
       throw new Error(`the job ${jobKey} failed`);
     }
   }
 };
 
-const getWorkflow = async (input: Input): Promise<Workflow> => {
+export type WorkflowRef = {
+  owner: string;
+  repo: string;
+  path: string;
+  ref: string;
+};
+
+export const parseWorkflowRef = (
+  workflowRef: string,
+  workflowSHA: string,
+): WorkflowRef => {
   // parse workflow ref
   // <owner>/<repo>/<path>@<ref>
-  const workflowParts = input.workflowRef.split("@")[0].split("/");
+  const workflowParts = workflowRef.split("@")[0].split("/");
   const workflowOwner = workflowParts[0];
   const workflowRepo = workflowParts[1];
   const workflowPath = workflowParts.slice(2).join("/");
+  return {
+    owner: workflowOwner,
+    repo: workflowRepo,
+    path: workflowPath,
+    ref: workflowSHA,
+  };
+};
+
+const getWorkflow = async (input: Input): Promise<Workflow> => {
+  // parse workflow ref
+  const workflowRef = parseWorkflowRef(input.workflowRef, input.workflowSHA);
 
   // reads or downloads the workflow file
   const octokit = github.getOctokit(input.githubToken);
   core.info(
-    `fetching workflow file ${workflowPath} (${input.workflowSHA}) from ${workflowOwner}/${workflowRepo}`,
+    `fetching workflow file ${workflowRef.path} (${workflowRef.ref}) from ${workflowRef.owner}/${workflowRef.repo}`,
   );
-  const resp = await octokit.rest.repos.getContent({
-    owner: workflowOwner,
-    repo: workflowRepo,
-    path: workflowPath,
-    ref: input.workflowSHA,
-  });
-  resp.status;
+  const resp = await octokit.rest.repos.getContent(workflowRef);
   const data = resp.data as { content?: string };
   if (data.content === undefined) {
     throw new Error(
       `workflow file is not a file: (${resp.status}) ${JSON.stringify(resp.data)}`,
     );
   }
-  if (data.content === "") {
+  return parseWorkflowData(data.content);
+};
+
+export const parseWorkflowData = (content: string): Workflow => {
+  if (content === "") {
     throw new Error("workflow file is empty");
   }
 
   let contentYAML;
   try {
-    contentYAML = load(Buffer.from(data.content, "base64").toString("utf-8"));
+    contentYAML = load(Buffer.from(content, "base64").toString("utf-8"));
   } catch (error) {
     throw new Error(`the workflow file is not a valid YAML: ${error}`);
   }
@@ -161,7 +180,7 @@ const getWorkflow = async (input: Input): Promise<Workflow> => {
   return w.data;
 };
 
-const validateWorkflow = (input: Input, workflow: Workflow) => {
+export const validateWorkflow = (input: Input, workflow: Workflow) => {
   const jobKeys = new Set(
     Object.keys(input.needs).concat(input.ignoredJobKeys).concat([input.job]),
   );
