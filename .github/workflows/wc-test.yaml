@@ -23,6 +23,7 @@ jobs:
           node-version-file: .node-version
           cache: npm
       - run: npm ci
+      - run: npm t
       - run: npm run build
       - uses: ./
         with:
