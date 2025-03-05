@@ -47,19 +47,19 @@ To solve the issue, let's add a job `status-check` to the workflow and `Status c
 You can remove `test` and `build` from `Status checks that are required`.
 
 ```yaml
-  status-check:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    needs: # Add all jobs
-      - test
-      - build
-    if: always() # This job must be run always
-    permissions:
-      contents: read # To get the workflow content by GitHub API
-    steps:
-      - uses: suzuki-shunsuke/required-status-check-action@latest
-        with:
-          needs: ${{ toJson(needs) }} # Required
+status-check:
+  runs-on: ubuntu-24.04
+  timeout-minutes: 10
+  needs: # Add all jobs
+    - test
+    - build
+  if: always() # This job must be run always
+  permissions:
+    contents: read # To get the workflow content by GitHub API
+  steps:
+    - uses: suzuki-shunsuke/required-status-check-action@latest
+      with:
+        needs: ${{ toJson(needs) }} # Required
 ```
 
 Let's create a pull request and run the workflow.
@@ -88,12 +88,12 @@ Let's Re-run `build` too. Then all jobs pass.
 Let's add a new job `check`.
 
 ```yaml
-  check:
-    runs-on: ubuntu-24.04
-    permissions: {}
-    timeout-minutes: 10
-    steps:
-      - run: echo "check"
+check:
+  runs-on: ubuntu-24.04
+  permissions: {}
+  timeout-minutes: 10
+  steps:
+    - run: echo "check"
 ```
 
 Note that `check` isn't included in `status-check`'s `needs` now.
@@ -108,13 +108,13 @@ Error: The job check must be added to status-check's needs or ignored_jobs
 To solve the error, let's add `check` to `status-check`'s `needs`.
 
 ```yaml
-  status-check:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    needs:
-      - test
-      - build
-      - check
+status-check:
+  runs-on: ubuntu-24.04
+  timeout-minutes: 10
+  needs:
+    - test
+    - build
+    - check
 ```
 
 Then all jobs pass.
@@ -127,14 +127,14 @@ Maybe you want to run any jobs after `status-check`.
 Let's add a job `merge` and add `status-check` to the job's `needs`.
 
 ```yaml
-  merge:
-    runs-on: ubuntu-24.04
-    permissions: {}
-    timeout-minutes: 10
-    needs:
-      - status-check
-    steps:
-      - run: echo "merge"
+merge:
+  runs-on: ubuntu-24.04
+  permissions: {}
+  timeout-minutes: 10
+  needs:
+    - status-check
+  steps:
+    - run: echo "merge"
 ```
 
 Then `status-check` fails because `merge` isn't included in `needs` of `status-check`.
@@ -163,9 +163,9 @@ Then `status-check` passes.
 You can also ignore multiple jobs.
 
 ```yaml
-    ignored_jobs: |
-      merge
-      after-merge
+ignored_jobs: |
+  merge
+  after-merge
 ```
 
 ## Available versions
