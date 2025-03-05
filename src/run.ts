@@ -106,17 +106,21 @@ const getWorkflow = async (input: Input): Promise<Workflow> => {
 
   // reads or downloads the workflow file
   const octokit = github.getOctokit(input.githubToken);
-  core.info(`fetching workflow file ${workflowPath} (${input.workflowSHA}) from ${workflowOwner}/${workflowRepo}`);
+  core.info(
+    `fetching workflow file ${workflowPath} (${input.workflowSHA}) from ${workflowOwner}/${workflowRepo}`,
+  );
   const resp = await octokit.rest.repos.getContent({
     owner: workflowOwner,
     repo: workflowRepo,
     path: workflowPath,
     ref: input.workflowSHA,
   });
-  resp.status
+  resp.status;
   const data = resp.data as { content?: string };
   if (data.content === undefined) {
-    throw new Error(`workflow file is not a file: (${resp.status}) ${JSON.stringify(resp.data)}`);
+    throw new Error(
+      `workflow file is not a file: (${resp.status}) ${JSON.stringify(resp.data)}`,
+    );
   }
   if (data.content === "") {
     throw new Error("workflow file is empty");
