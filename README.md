@@ -80,7 +80,7 @@ status-check:
 ```
 
 Let's create a pull request and run the workflow.
-Then `status-check` fails because `test` and `build` fail.
+Then `status-check` fails because `test` and `build` fail. 👍
 
 ![image](https://github.com/user-attachments/assets/36fe3c41-400d-48d0-a26c-ce798ab91942)
 
@@ -100,12 +100,12 @@ And rerun only `test`.
 
 ![rerun only test](https://github.com/user-attachments/assets/d3f6e31d-380b-4128-b8b1-b18a3506dba4)
 
-Then `test` succeeds but `status-check` fails expectedly because `build` fails.
+Then `test` succeeds but `status-check` fails expectedly because `build` fails. 👍
 
 ![image](https://github.com/user-attachments/assets/a214dd3e-00f0-461a-ae70-5402c73fe2ec)
 
 Let's Re-run `build` too. Then all jobs pass.
-`status-check` succeeds because `test` and `build` succeed.
+`status-check` succeeds because both `test` and `build` succeed. 👍
 
 ![image](https://github.com/user-attachments/assets/5646e20b-ca13-402b-80c4-4121db5195b7)
 
@@ -121,7 +121,7 @@ check:
 ```
 
 Note that `check` isn't included in `status-check`'s `needs` now.
-All jobs except for `status-check` pass but `status-check` fails because `check` isn't included in `status-check`'s `needs`.
+All jobs except for `status-check` pass but `status-check` fails because `check` isn't included in `status-check`'s `needs`. 👍
 
 ![image](https://github.com/user-attachments/assets/1c0f338c-7db0-483e-835b-3e401293308c)
 
@@ -141,7 +141,7 @@ status-check:
     - check
 ```
 
-Then all jobs pass.
+Then all jobs pass. 👍
 
 ![image](https://github.com/user-attachments/assets/a4d7d3a7-a0b0-460b-b813-abb3866044a2)
 
@@ -180,7 +180,7 @@ To resolve the error, please add `merge` to `ignored_jobs` of `status-check`.
       merge
 ```
 
-Then `status-check` passes.
+Then `status-check` passes. 👍
 
 ![image](https://github.com/user-attachments/assets/ac7fc4d7-17c7-4401-9386-a8e19d9a0eca)
 
