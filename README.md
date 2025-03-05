@@ -1,6 +1,6 @@
 # required-status-check-action
 
-[![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat-square)](https://raw.githubusercontent.com/suzuki-shunsuke/required-status-check-action/main/LICENSE) | [action.yaml](action.yaml)
+[![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat-square)](https://raw.githubusercontent.com/suzuki-shunsuke/required-status-check-action/main/LICENSE) | [action.yaml](action.yaml) | [Contributing](CONTRIBUTING.md)
 
 `required-status-check-action` is a GitHub Action to validate if a specific job (we call `status-check` job) depends on all required jobs directly or indirectly.
 This action allows you to configure GitHub Branch Rulesets' `Require status checks to pass` easily and correctly.
@@ -38,7 +38,7 @@ status-check:
   permissions:
     contents: read # To get the workflow content by GitHub API
   steps:
-    - uses: suzuki-shunsuke/required-status-check-action@main
+    - uses: suzuki-shunsuke/required-status-check-action@latest
       with:
         needs: ${{ toJson(needs) }}
 ```
@@ -66,6 +66,41 @@ merge:
 
 This action allows this kind of jobs.
 
+## Available versions
+
+> [!CAUTION]
+> We don't add `dist/*.js` in the main branch and feature branches.
+> So you can't specify `main` and feature branches as versions.
+>
+> ```yaml
+> # This never works as dist/index.js doesn't exist.
+> uses: suzuki-shunsuke/required-status-check-action@main
+> ```
+
+The following versions are available.
+
+1. [Release versions](https://github.com/suzuki-shunsuke/required-status-check-action/releases)
+
+```yaml
+uses: suzuki-shunsuke/required-status-check-action@v0.1.0
+```
+
+2. [Pull Request versions](https://github.com/suzuki-shunsuke/required-status-check-action/branches/all?query=pr%2F&lastTab=overview): These versions are removed when we feel unnecessary. These versions are used to test pull requests.
+
+```yaml
+uses: suzuki-shunsuke/required-status-check-action@pr/10
+```
+
+3. [latest branch](https://github.com/suzuki-shunsuke/required-status-check-action/tree/latest): [This branch is built by CI when the main branch is updated](https://github.com/suzuki-shunsuke/required-status-check-action/blob/latest/.github/workflows/main.yaml). Note that we push commits to the latest branch forcibly.
+
+```yaml
+uses: suzuki-shunsuke/required-status-check-action@latest
+```
+
+Pull Request versions and the latest branch are unstable.
+These versions are for testing.
+You should use the latest release version in production.
+
 ## How To Use
 
 1. Create a `pull_request` or `pull_request_target` workflow
@@ -88,7 +123,7 @@ status-check:
 4. Run this action in `status-check` with `needs: ${{ toJson(needs) }}`:
 
 ```yaml
-- uses: suzuki-shunsuke/required-status-check-action@main
+- uses: suzuki-shunsuke/required-status-check-action@latest
   with:
     needs: ${{ toJson(needs) }}
 ```
@@ -116,7 +151,7 @@ jobs:
     permissions:
       contents: read # To get the workflow content by GitHub API
     steps:
-      - uses: suzuki-shunsuke/required-status-check-action@main
+      - uses: suzuki-shunsuke/required-status-check-action@latest
         with:
           needs: ${{ toJson(needs) }}
 ```
