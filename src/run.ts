@@ -25,7 +25,7 @@ export const main = async () => {
     workflowRef: process.env.GITHUB_WORKFLOW_REF || "",
     workflowSHA: process.env.GITHUB_WORKFLOW_SHA || "",
     ignoredJobKeys: core
-      .getInput("ignored_job_keys")
+      .getInput("ignored_jobs")
       .split("\n")
       .map((s) => s.trim())
       .filter((s) => s !== ""),
@@ -38,6 +38,7 @@ const run = async (input: Input) => {
   needs: ${input.needs}
   checkWorkflow: ${input.checkWorkflow}
   job: ${input.job}
+  ignored_jobs: ${input.ignoredJobKeys.join(", ")}
   workflowRef: ${input.workflowRef}
   workflowSHA: ${input.workflowSHA}`);
 
