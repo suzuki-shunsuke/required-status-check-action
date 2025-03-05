@@ -72,7 +72,7 @@ const Job = z.object({
 type Job = z.infer<typeof Job>;
 
 const Workflow = z.object({
-  jobs: z.map(z.string(), Job),
+  jobs: z.record(z.string(), Job),
 });
 type Workflow = z.infer<typeof Workflow>;
 
@@ -129,14 +129,14 @@ const getWorkflow = async (input: Input): Promise<Workflow> => {
 };
 
 const validateWorkflow = (input: Input, workflow: Workflow) => {
-  const allJobKeys = new Set(workflow.jobs.keys());
+  const allJobKeys = new Set(Object.keys(workflow.jobs.keys));
   const jobKeys = new Set([input.job]);
-  if (!workflow.jobs.has(input.job)) {
+  if (!allJobKeys.has(input.job)) {
     throw new Error(`job ${input.job} not found in workflow`);
   }
   let count = 1;
   while (true) {
-    for (const [jobKey, job] of workflow.jobs.entries()) {
+    for (const [jobKey, job] of Object.entries(workflow.jobs)) {
       if (!shouldAdd(jobKeys, jobKey, job)) {
         continue;
       }
