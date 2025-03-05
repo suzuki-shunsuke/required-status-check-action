@@ -13,7 +13,9 @@ export const main = async () => {
   }
   const needs = Needs.safeParse(needsJSON);
   if (!needs.success) {
-    throw new Error(`needs must be either a string or an array of strings: ${needs.error}`);
+    throw new Error(
+      `needs must be either a string or an array of strings: ${needs.error}`,
+    );
   }
   run({
     githubToken: core.getInput("github_token"),
