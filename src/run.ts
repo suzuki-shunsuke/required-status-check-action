@@ -155,7 +155,7 @@ const getWorkflow = async (input: Input): Promise<Workflow> => {
 };
 
 const validateWorkflow = (input: Input, workflow: Workflow) => {
-  const allJobKeys = new Set(Object.keys(workflow.jobs.keys));
+  const allJobKeys = new Set(Object.keys(workflow.jobs));
   const jobKeys = new Set([input.job]);
   if (!allJobKeys.has(input.job)) {
     throw new Error(`job ${input.job} not found in workflow`);
