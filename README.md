@@ -7,19 +7,19 @@ You don't need to add all jobs to `Status checks that are required`.
 By adding all jobs to `needs` of the job `status-check`, `required-status-check-action` validates if all jobs pass.
 
 ```yaml
-  status-check:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    needs: # Add all jobs
-      - test
-      - build
-    if: always() # This job must be run always
-    permissions:
-      contents: read # To get the workflow content by GitHub API
-    steps:
-      - uses: suzuki-shunsuke/required-status-check-action@latest
-        with:
-          needs: ${{ toJson(needs) }} # Required
+status-check:
+  runs-on: ubuntu-24.04
+  timeout-minutes: 10
+  needs: # Add all jobs
+    - test
+    - build
+  if: always() # This job must be run always
+  permissions:
+    contents: read # To get the workflow content by GitHub API
+  steps:
+    - uses: suzuki-shunsuke/required-status-check-action@latest
+      with:
+        needs: ${{ toJson(needs) }} # Required
 ```
 
 Furthermore, `required-status-check-action` validates if all jobs are added to `needs` of `required-status-check-action`.
