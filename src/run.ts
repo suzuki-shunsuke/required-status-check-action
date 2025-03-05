@@ -24,7 +24,11 @@ export const main = async () => {
     job: core.getInput("job"),
     workflowRef: process.env.GITHUB_WORKFLOW_REF || "",
     workflowSHA: process.env.GITHUB_WORKFLOW_SHA || "",
-    ignoredJobKeys: core.getInput("ignored_job_keys").split("\n").map((s) => s.trim()).filter((s) => s !== ""),
+    ignoredJobKeys: core
+      .getInput("ignored_job_keys")
+      .split("\n")
+      .map((s) => s.trim())
+      .filter((s) => s !== ""),
   });
 };
 
@@ -157,10 +161,14 @@ const getWorkflow = async (input: Input): Promise<Workflow> => {
 };
 
 const validateWorkflow = (input: Input, workflow: Workflow) => {
-  const jobKeys = new Set(Object.keys(input.needs).concat(input.ignoredJobKeys).concat([input.job]));
+  const jobKeys = new Set(
+    Object.keys(input.needs).concat(input.ignoredJobKeys).concat([input.job]),
+  );
   for (const jobKey of Object.keys(workflow.jobs)) {
     if (!jobKeys.has(jobKey)) {
-      throw new Error(`The job ${jobKey} must be added to ${input.job}'s needs or ignored_jobs`);
+      throw new Error(
+        `The job ${jobKey} must be added to ${input.job}'s needs or ignored_jobs`,
+      );
     }
   }
 };
