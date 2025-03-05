@@ -27,3 +27,4 @@ jobs:
       - uses: ./
         with:
           needs: ${{ toJson(needs) }}
+          job: status-check
