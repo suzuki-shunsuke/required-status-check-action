@@ -16,7 +16,7 @@ So we recommend making all jobs depending on a single job, making the job fail u
 We call this job `status-check` job.
 
 ```mermaid
-graph TD;
+graph LR;
     Test-->status-check;
     Build-->status-check;
 ```
