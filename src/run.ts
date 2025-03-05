@@ -24,6 +24,11 @@ export const main = async () => {
     job: core.getInput("job"),
     workflowRef: process.env.GITHUB_WORKFLOW_REF || "",
     workflowSHA: process.env.GITHUB_WORKFLOW_SHA || "",
+    ignoredJobKeys: core
+      .getInput("ignored_job_keys")
+      .split("\n")
+      .map((s) => s.trim())
+      .filter((s) => s !== ""),
   });
 };
 
@@ -64,6 +69,7 @@ export type Input = {
   job: string;
   workflowRef: string;
   workflowSHA: string;
+  ignoredJobKeys: string[];
 };
 
 const Need = z.object({
@@ -103,9 +109,9 @@ const validateInput = (input: Input) => {
 };
 
 const validateNeeds = (input: Input) => {
-  for (const need of Object.values(input.needs)) {
+  for (const [jobKey, need] of Object.entries(input.needs)) {
     if (need.result === "failure") {
-      throw new Error("a need failed");
+      throw new Error(`the job ${jobKey} failed`);
     }
   }
 };
@@ -155,65 +161,14 @@ const getWorkflow = async (input: Input): Promise<Workflow> => {
 };
 
 const validateWorkflow = (input: Input, workflow: Workflow) => {
-  const allJobKeys = new Set(Object.keys(workflow.jobs));
-  const jobKeys = new Set([input.job]);
-  if (!allJobKeys.has(input.job)) {
-    throw new Error(`job ${input.job} not found in workflow`);
-  }
-  let count = 1;
-  while (true) {
-    for (const [jobKey, job] of Object.entries(workflow.jobs)) {
-      if (!shouldAdd(jobKeys, jobKey, job)) {
-        continue;
-      }
-      addJob(jobKeys, jobKey, job);
-    }
-    if (jobKeys.size === count) {
-      break;
-    }
-    count = jobKeys.size;
-  }
-  const invalidJobs = new Set<string>();
-  for (const jobKey of allJobKeys) {
+  const jobKeys = new Set(
+    Object.keys(input.needs).concat(input.ignoredJobKeys).concat([input.job]),
+  );
+  for (const jobKey of Object.keys(workflow.jobs)) {
     if (!jobKeys.has(jobKey)) {
-      invalidJobs.add(jobKey);
+      throw new Error(
+        `The job ${jobKey} must be added to ${input.job}'s needs or ignored_jobs`,
+      );
     }
-  }
-  if (invalidJobs.size > 0) {
-    throw new Error(
-      `jobs ${Array.from(invalidJobs).join(", ")} should be added to the needs of ${input.job}`,
-    );
-  }
-};
-
-const shouldAdd = (jobKeys: Set<string>, jobKey: string, job: Job): boolean => {
-  if (job.needs === undefined) {
-    return false;
-  }
-  if (jobKeys.has(jobKey)) {
-    return true;
-  }
-  if (typeof job.needs === "string") {
-    return jobKeys.has(job.needs);
-  }
-  for (const need of job.needs) {
-    if (jobKeys.has(need)) {
-      return true;
-    }
-  }
-  return false;
-};
-
-const addJob = (jobKeys: Set<string>, jobKey: string, job: Job) => {
-  if (job.needs === undefined) {
-    return;
-  }
-  jobKeys.add(jobKey);
-  if (typeof job.needs === "string") {
-    jobKeys.add(job.needs);
-    return;
-  }
-  for (const need of job.needs) {
-    jobKeys.add(need);
   }
 };
