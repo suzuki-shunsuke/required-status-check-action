@@ -126,7 +126,7 @@ All jobs except for `status-check` pass but `status-check` fails because `check`
 ![image](https://github.com/user-attachments/assets/1c0f338c-7db0-483e-835b-3e401293308c)
 
 ```
-Error: The job check must be added to status-check's needs or ignored_jobs
+Error: Jobs (check) must be added to status-check's needs or ignored_jobs
 ```
 
 To solve the error, let's add `check` to `status-check`'s `needs`.
@@ -166,7 +166,7 @@ Then `status-check` fails because `merge` isn't included in `needs` of `status-c
 ![image](https://github.com/user-attachments/assets/0f3f04f0-6404-44ca-890e-ad3fec320fd7)
 
 ```
-Error: The job merge must be added to status-check's needs or ignored_jobs
+Error: Jobs (merge) must be added to status-check's needs or ignored_jobs
 ```
 
 Of course, you can't add `merge` to `needs` of `status-check`.

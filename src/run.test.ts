@@ -52,8 +52,11 @@ test("validateNeeds", () => {
       foo: {
         result: "failure",
       },
+      bar: {
+        result: "failure",
+      },
     }),
-  ).toThrowError("the job foo failed");
+  ).toThrowError("Jobs (bar, foo) failed");
 });
 
 test("validateWorkflow", () => {
@@ -77,6 +80,7 @@ test("validateWorkflow", () => {
         jobs: {
           test: {},
           build: {},
+          foo: {},
           "status-check": {
             needs: ["test"],
           },
@@ -84,7 +88,7 @@ test("validateWorkflow", () => {
       },
     ),
   ).toThrowError(
-    "The job build must be added to status-check's needs or ignored_jobs",
+    "Jobs (build, foo) must be added to status-check's needs or ignored_jobs",
   );
 });
 
