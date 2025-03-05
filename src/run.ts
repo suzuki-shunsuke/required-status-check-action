@@ -9,11 +9,11 @@ export const main = async () => {
   try {
     needsJSON = JSON.parse(inputNeeds);
   } catch (error) {
-    throw new Error(`needs is not a valid JSON: ${error}`);
+    Throw(`needs is not a valid JSON: ${error}`);
   }
   const needs = Needs.safeParse(needsJSON);
   if (!needs.success) {
-    throw new Error(
+    return Throw(
       `needs must be either a string or an array of strings: ${needs.error}`,
     );
   }
@@ -99,13 +99,13 @@ type Workflow = z.infer<typeof Workflow>;
 
 export const validateInput = (input: Input) => {
   if (input.job === "") {
-    throw new Error("GITHUB_JOB is required");
+    Throw("GITHUB_JOB is required");
   }
   if (input.workflowRef === "") {
-    throw new Error("GITHUB_WORKFLOW_REF is required");
+    Throw("GITHUB_WORKFLOW_REF is required");
   }
   if (input.workflowSHA === "") {
-    throw new Error("GITHUB_WORKFLOW_SHA is required");
+    Throw("GITHUB_WORKFLOW_SHA is required");
   }
 };
 
@@ -118,7 +118,7 @@ export const validateNeeds = (needs: Needs) => {
   }
   if (jobs.length > 0) {
     jobs.sort();
-    throw new Error(`Jobs (${jobs.join(", ")}) failed`);
+    Throw(`Jobs (${jobs.join(", ")}) failed`);
   }
 };
 
@@ -159,7 +159,7 @@ const getWorkflow = async (input: Input): Promise<Workflow> => {
   const resp = await octokit.rest.repos.getContent(workflowRef);
   const data = resp.data as { content?: string };
   if (data.content === undefined) {
-    throw new Error(
+    return Throw(
       `workflow file is not a file: (${resp.status}) ${JSON.stringify(resp.data)}`,
     );
   }
@@ -168,21 +168,26 @@ const getWorkflow = async (input: Input): Promise<Workflow> => {
 
 export const parseWorkflowData = (content: string): Workflow => {
   if (content === "") {
-    throw new Error("workflow file is empty");
+    Throw("workflow file is empty");
   }
 
   let contentYAML;
   try {
     contentYAML = load(Buffer.from(content, "base64").toString("utf-8"));
   } catch (error) {
-    throw new Error(`the workflow file is not a valid YAML: ${error}`);
+    Throw(`the workflow file is not a valid YAML: ${error}`);
   }
 
   const w = Workflow.safeParse(contentYAML);
   if (!w.success) {
-    throw new Error(`the workflow file is not a valid workflow: ${w.error}`);
+    return Throw(`the workflow file is not a valid workflow: ${w.error}`);
   }
   return w.data;
+};
+
+const Throw = (message: string) => {
+  core.error(message);
+  throw new Error(message);
 };
 
 export const validateWorkflow = (input: Input, workflow: Workflow) => {
@@ -197,10 +202,7 @@ export const validateWorkflow = (input: Input, workflow: Workflow) => {
   }
   if (invalidJobKeys.length > 0) {
     invalidJobKeys.sort();
-    core.error(
-      `Jobs (${invalidJobKeys.join(", ")}) must be added to ${input.job}'s needs or ignored_jobs`,
-    );
-    throw new Error(
+    Throw(
       `Jobs (${invalidJobKeys.join(", ")}) must be added to ${input.job}'s needs or ignored_jobs`,
     );
   }
