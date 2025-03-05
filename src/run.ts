@@ -110,10 +110,15 @@ export const validateInput = (input: Input) => {
 };
 
 export const validateNeeds = (needs: Needs) => {
+  const jobs: string[] = [];
   for (const [jobKey, need] of Object.entries(needs)) {
     if (need.result === "failure") {
-      throw new Error(`the job ${jobKey} failed`);
+      jobs.push(jobKey);
     }
+  }
+  if (jobs.length > 0) {
+    jobs.sort();
+    throw new Error(`Jobs (${jobs.join(", ")}) failed`);
   }
 };
 
@@ -184,11 +189,16 @@ export const validateWorkflow = (input: Input, workflow: Workflow) => {
   const jobKeys = new Set(
     Object.keys(input.needs).concat(input.ignoredJobKeys).concat([input.job]),
   );
+  const invalidJobKeys: string[] = [];
   for (const jobKey of Object.keys(workflow.jobs)) {
     if (!jobKeys.has(jobKey)) {
-      throw new Error(
-        `The job ${jobKey} must be added to ${input.job}'s needs or ignored_jobs`,
-      );
+      invalidJobKeys.push(jobKey);
     }
+  }
+  if (invalidJobKeys.length > 0) {
+    invalidJobKeys.sort();
+    throw new Error(
+      `Jobs (${invalidJobKeys.join(", ")}) must be added to ${input.job}'s needs or ignored_jobs`,
+    );
   }
 };
