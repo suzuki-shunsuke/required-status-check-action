@@ -50,7 +50,7 @@ jobs:
           FOO: ${{vars.FOO}}
 ```
 
-Let's configure Branch Rulesets so that jobs `test` and `build` must pass before merging pull requests.
+Let's configure Branch Rulesets so that jobs `test` and `build` must pass to merge pull requests.
 
 1. Enable `Require status checks to pass`
 1. Add `test` and `build` to `Status checks that are required`
