@@ -2,7 +2,7 @@ name: Required Status Check
 description: Required Status Check
 author: Shunsuke Suzuki
 branding:
-  icon: lock
+  icon: check
   color: green
 inputs:
   job:
