@@ -197,6 +197,7 @@ export const validateWorkflow = (input: Input, workflow: Workflow) => {
   }
   if (invalidJobKeys.length > 0) {
     invalidJobKeys.sort();
+    core.error(`Jobs (${invalidJobKeys.join(", ")}) must be added to ${input.job}'s needs or ignored_jobs`);
     throw new Error(
       `Jobs (${invalidJobKeys.join(", ")}) must be added to ${input.job}'s needs or ignored_jobs`,
     );
