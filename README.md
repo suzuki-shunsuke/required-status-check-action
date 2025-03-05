@@ -85,6 +85,13 @@ Then `status-check` fails because `test` and `build` fail.
 ![image](https://github.com/user-attachments/assets/36fe3c41-400d-48d0-a26c-ce798ab91942)
 
 `test` and `build` fail because the variable `FOO` isn't set.
+
+```yaml
+- run: test -n "$FOO"
+  env:
+    FOO: ${{vars.FOO}}
+```
+
 To solve the error, let's set the varible.
 
 ![image](https://github.com/user-attachments/assets/1578aef2-529d-4be1-a06a-ee036dc3df0a)
