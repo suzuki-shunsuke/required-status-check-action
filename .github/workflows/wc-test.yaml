@@ -26,5 +26,5 @@ jobs:
       - run: npm run build
       - uses: ./
         with:
-          needs: ${{ toJson(needs) }}
+          needs: ${{ inputs.needs }}
           job: status-check
