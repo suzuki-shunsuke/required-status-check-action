@@ -139,7 +139,18 @@ const getWorkflow = async (input: Input): Promise<Workflow> => {
   if (data.content === "") {
     throw new Error("workflow file is empty");
   }
-  const w = Workflow.safeParse(load(data.content));
+
+  // debug
+  core.info(`workflow file content: ${data.content}`);
+
+  let contentYAML;
+  try {
+    contentYAML = load(data.content);
+  } catch (error) {
+    throw new Error(`the workflow file is not a valid YAML: ${error}`);
+  }
+
+  const w = Workflow.safeParse(contentYAML);
   if (!w.success) {
     throw new Error(`the workflow file is not a valid workflow: ${w.error}`);
   }
