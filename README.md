@@ -17,7 +17,7 @@ status-check:
   permissions:
     contents: read # To get the workflow content by GitHub API
   steps:
-    - uses: suzuki-shunsuke/required-status-check-action@23dd14177241cb02e6629fe1421adb3d6726f27f # v0.1.2
+    - uses: suzuki-shunsuke/required-status-check-action@2b5a46064846b09381852c2c4217e898f639e768 # v0.1.3
       with:
         needs: ${{ toJson(needs) }} # Required
 ```
@@ -74,7 +74,7 @@ status-check:
   permissions:
     contents: read # To get the workflow content by GitHub API
   steps:
-    - uses: suzuki-shunsuke/required-status-check-action@23dd14177241cb02e6629fe1421adb3d6726f27f # v0.1.2
+    - uses: suzuki-shunsuke/required-status-check-action@2b5a46064846b09381852c2c4217e898f639e768 # v0.1.3
       with:
         needs: ${{ toJson(needs) }} # Required
 ```
@@ -173,7 +173,7 @@ Of course, you can't add `merge` to `needs` of `status-check`.
 To resolve the error, please add `merge` to `ignored_jobs` of `status-check`.
 
 ```yaml
-- uses: suzuki-shunsuke/required-status-check-action@23dd14177241cb02e6629fe1421adb3d6726f27f # v0.1.2
+- uses: suzuki-shunsuke/required-status-check-action@2b5a46064846b09381852c2c4217e898f639e768 # v0.1.3
   with:
     needs: ${{ toJson(needs) }}
     ignored_jobs: |
@@ -208,7 +208,7 @@ The following versions are available.
 1. [Release versions](https://github.com/suzuki-shunsuke/required-status-check-action/releases)
 
 ```yaml
-uses: suzuki-shunsuke/required-status-check-action@23dd14177241cb02e6629fe1421adb3d6726f27f # v0.1.2
+uses: suzuki-shunsuke/required-status-check-action@2b5a46064846b09381852c2c4217e898f639e768 # v0.1.3
 ```
 
 2. [Pull Request versions](https://github.com/suzuki-shunsuke/required-status-check-action/branches/all?query=pr%2F&lastTab=overview): These versions are removed when we feel unnecessary. These versions are used to test pull requests.
